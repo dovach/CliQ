@@ -64,6 +64,7 @@ import java.util.Vector;
 				if(Clique_Tester.Debug){
 					System.out.println("Assumes CSV nodes list representation!");
                     s = is.readLine();
+                    st = new StringTokenizer(s," ");
 					_mat_flag = false;
                     _csv_flag=true;
 				}
@@ -91,7 +92,6 @@ import java.util.Vector;
 				}
 				else {
                     if (_csv_flag) {
-                        st = new StringTokenizer(s," ");
                         if (st.countTokens()!=2) {
                             throw new Exception("Wrong file format!!!");
                         }
@@ -115,7 +115,14 @@ import java.util.Vector;
 				this._V.add(vs);
 				line++;
 				s = is.readLine();
-			if(s!=null)	st = new StringTokenizer(s,", ");
+			if(s!=null){
+                if(_csv_flag){
+                    st = new StringTokenizer(s," ");
+                }
+                else{
+                    st = new StringTokenizer(s,", ");
+                }
+            }
 			}
 			if(this._mat_flag & Clique_Tester.Convert) {write2file();}
 			if(Clique_Tester.Debug){
