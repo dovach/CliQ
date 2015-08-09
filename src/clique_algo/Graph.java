@@ -21,14 +21,19 @@ import java.util.Vector;
 	 private double _TH; // the threshold value
 	 private int _E_size = 0;
 	 private boolean _mat_flag=true;
+     private boolean _csv_flag=false;
 	 Graph(String file, double th) {
 		this._file_name = file;
 		_TH = th;
 		_V = new  Vector <VertexSet>();
-		 init();
-	 }
+         try {
+             init();
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+     }
 	 
-	private void init() {
+	private void init() throws Exception {
 		FileReader fr=null;
 		try {
 			fr = new FileReader(this._file_name);
@@ -42,14 +47,10 @@ import java.util.Vector;
 			
 			String ll = "0%   20%   40%   60%   80%   100%";
 			int t = Math.max(1,len/ll.length());
-			if(Clique_Tester.Debug){
-				System.out.println("Reading a corrolation matrix of size: "+len+"*"+len+" this may take a while");
-				System.out.println(ll);
-			}
 			_mat_flag = true;
 			if (s.startsWith("A")) {
 				if(Clique_Tester.Debug){
-					System.out.println("Assumes compact representation! two line haeder!!!");
+					System.out.println("Assumes compact representation! two line header!!!");
 					System.out.println("Header Line1: "+s);
 					s = is.readLine();
 					System.out.println("Header Line2: "+s);
@@ -57,6 +58,20 @@ import java.util.Vector;
 					st = new StringTokenizer(s,", ");
 					_mat_flag = false;
 				}
+			}
+
+			if (s.startsWith("B")) {
+				if(Clique_Tester.Debug){
+					System.out.println("Assumes CSV nodes list representation!");
+                    s = is.readLine();
+					_mat_flag = false;
+                    _csv_flag=true;
+				}
+			}
+
+			if(Clique_Tester.Debug && _mat_flag==true){
+				System.out.println("Reading a corrolation matrix of size: "+len+"*"+len+" this may take a while");
+				System.out.println(ll);
 			}
 	
 			while(s!=null) {
@@ -75,13 +90,28 @@ import java.util.Vector;
 					}
 				}
 				else {
-					st.nextToken();
-					while(st.hasMoreTokens()) {
-						int ind = new Integer(st.nextToken()).intValue();
-						// bug fixed as for Ronens format.
-						if(line<ind) vs.add(ind);
-					}
-				}
+                    if (_csv_flag) {
+                        st = new StringTokenizer(s," ");
+                        if (st.countTokens()!=2) {
+                            throw new Exception("Wrong file format!!!");
+                        }
+                        int source = new Integer(st.nextToken()).intValue();
+                        String s2 = st.nextToken();
+                        StringTokenizer st2 = new StringTokenizer(s2,", ");
+
+                        st2.nextToken();
+                        while (st2.hasMoreTokens()) {
+                            int ind = new Integer(st2.nextToken()).intValue();
+                            if (line < ind) vs.add(ind);
+                        }
+                    } else {
+                        st.nextToken();
+                        while (st.hasMoreTokens()) {
+                            int ind = new Integer(st.nextToken()).intValue();
+                            if (line < ind) vs.add(ind);
+                        }
+                    }
+                }
 				this._V.add(vs);
 				line++;
 				s = is.readLine();
