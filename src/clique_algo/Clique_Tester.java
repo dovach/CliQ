@@ -19,9 +19,9 @@ public class Clique_Tester {
 	
 	public static void main(String[] args) {  // test1.csv_DG.txt  0.8 5 7
 		
-	String[] A={"test1.csv","0.8","5","7"};
+	String[] A={"test1.csv","0.8","4","7"};
 			//	if(args==null || args.length<3) {
-			help();
+			//help();
 		//}
 		//else {
 			parse(A);
@@ -43,9 +43,19 @@ public class Clique_Tester {
 			//write2file(c1);
 			//out_file = in_file+"_out2.txt";
 			//printAll(c2);
-			//write2file(c2);
 			
-		//}
+			//--------------> Second run - with minimum limitation
+			
+			long t02= new Date().getTime();
+			Graph G2 = new Graph(in_file, TH,minQ);
+			long t12= new Date().getTime();
+			System.out.println("Init Graph: "+(t12-t02)+"  ms");	
+			long t22= new Date().getTime();
+			if(out_file==null)  out_file = in_file+"_"+TH+"_"+minQ+"_"+maxQ+".csv";
+			G.All_Cliques_DFS(out_file,minQ,maxQ);
+			long t32= new Date().getTime();
+			System.out.println("Alg3: "+(t32-t22)+"  ms");
+		
 	}
 	static void help() {
 		System.out.println("Wrong Parameters! should use: java -jar All_Cliques <input file> <round value> <min clique> <max clique> <output file> <max_cliques> <Graph convert flag>");
