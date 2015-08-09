@@ -102,7 +102,7 @@ import java.util.Vector;
                         st2.nextToken();
                         while (st2.hasMoreTokens()) {
                             int ind = new Integer(st2.nextToken()).intValue();
-                            if (line < ind) vs.add(ind);
+                            if (source < ind) vs.add(ind);
                         }
                     } else {
                         st.nextToken();
