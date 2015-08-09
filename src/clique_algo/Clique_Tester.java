@@ -20,11 +20,11 @@ public class Clique_Tester {
 	public static void main(String[] args) {  // test1.csv_DG.txt  0.8 5 7
 		
 	String[] A={"test1.csv","0.8","5","7"};
-				if(args==null || args.length<3) {
+			//	if(args==null || args.length<3) {
 			help();
-		}
-		else {
-			parse(args);
+		//}
+		//else {
+			parse(A);
 		
 			long t0= new Date().getTime();
 			Graph G = new Graph(in_file, TH);
