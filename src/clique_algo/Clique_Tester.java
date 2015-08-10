@@ -19,21 +19,13 @@ public class Clique_Tester {
 	
 	public static void main(String[] args) {  // test1.csv_DG.txt  0.8 5 7
 		
-	String[] A={"test1.csv","0.8","5","7"};
-<<<<<<< HEAD
-				//if(args==null || args.length<3) {
+	String[] A={"test2.txt","0.8","5","7"};
+			//	if(args==null || args.length<3) {
 			//help();
 		//}
 		//else {
 			//parse(args);
-=======
-				if(args==null || args.length<3) {
-			help();
-		}
-		else {
-			parse(args);
->>>>>>> branch 'master' of local repository
-		
+			parse(A);
 			long t0= new Date().getTime();
 			Graph G = new Graph(in_file, TH);
 			long t1= new Date().getTime();

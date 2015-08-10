@@ -35,6 +35,10 @@ import java.util.Vector;
 	 
 	private void init() throws Exception {
 		FileReader fr=null;
+        int source=0;
+        int ind=0;
+        int Vertex_num=0;
+        String[] splited = new String[10];
 		try {
 			fr = new FileReader(this._file_name);
 		} catch (FileNotFoundException e) {	e.printStackTrace();}
@@ -60,11 +64,15 @@ import java.util.Vector;
 				}
 			}
 
-			if (s.startsWith("B")) {
+			if (s.startsWith("S")) {
 				if(Clique_Tester.Debug){
 					System.out.println("Assumes CSV nodes list representation!");
+                    splited = s.split(" ");
+                    Vertex_num=Integer.parseInt(splited[1]);
                     s = is.readLine();
-                    st = new StringTokenizer(s," ");
+                    //st = new StringTokenizer(s," ");
+                    splited = s.split(";");
+                    //this._V.setSize(Vertex_num);
 					_mat_flag = false;
                     _csv_flag=true;
 				}
@@ -92,39 +100,55 @@ import java.util.Vector;
 				}
 				else {
                     if (_csv_flag) {
-                        if (st.countTokens()!=2) {
+                       if (splited.length>2) {
                             throw new Exception("Wrong file format!!!");
                         }
-                        int source = new Integer(st.nextToken()).intValue();
-                        String s2 = st.nextToken();
-                        StringTokenizer st2 = new StringTokenizer(s2,", ");
-
-                        st2.nextToken();
-                        while (st2.hasMoreTokens()) {
-                            int ind = new Integer(st2.nextToken()).intValue();
-                            if (source < ind) vs.add(ind);
+                        source = Integer.parseInt(splited[0]);
+                        if(splited.length==1) {
+                            ind = source;
+                            vs.add(ind);
+                            _E_size++;
                         }
+                        else{
+                            StringTokenizer st2 = new StringTokenizer(splited[1], ", ");
+                            while (st2.hasMoreTokens()) {
+                                ind = new Integer(st2.nextToken()).intValue();
+                                if (source < ind) vs.add(ind);
+                                _E_size++;
+                            }
+                        }
+
+
+
                     } else {
                         st.nextToken();
                         while (st.hasMoreTokens()) {
-                            int ind = new Integer(st.nextToken()).intValue();
+                            ind = new Integer(st.nextToken()).intValue();
                             if (line < ind) vs.add(ind);
+                            _E_size++;
                         }
                     }
                 }
-				this._V.add(vs);
+                if(_csv_flag){
+                    this._V.add(source, vs);
+                }
+                else{
+                    this._V.add(vs);
+                }
 				line++;
 				s = is.readLine();
 			if(s!=null){
                 if(_csv_flag){
-                    st = new StringTokenizer(s," ");
+                    //st = new StringTokenizer(s," ");
+                    splited = s.split("; ");
                 }
                 else{
                     st = new StringTokenizer(s,", ");
                 }
             }
 			}
-			if(this._mat_flag & Clique_Tester.Convert) {write2file();}
+			//if(this._mat_flag & Clique_Tester.Convert) {write2file();}
+            if(Clique_Tester.Convert) {write2file();}
 			if(Clique_Tester.Debug){
 				System.out.println("");
 				System.out.print("done reading the graph! ");
@@ -375,7 +399,12 @@ import java.util.Vector;
 		os.println("");
 		for(int i=0;i<this._V.size();i++) {
 			VertexSet curr = _V.elementAt(i);
-			os.println(i+", "+curr.toFile());
+            if (_csv_flag){
+                if(curr != null) os.println(i + ", " + curr.toFile());
+            }
+            else {
+                os.println(i + ", " + curr.toFile());
+            }
 		}
 		os.close();
 		try {

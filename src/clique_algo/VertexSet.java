@@ -1,6 +1,6 @@
 package clique_algo;
 /**
- * this class represents a simple ORDERD set of vertices. used by Cliques
+ * this class represents a simple ORDERED set of vertices. used by Cliques
  * The code was written in C like flavor - no java.util, no abstraction  
  * @author Boaz
  *
