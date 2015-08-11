@@ -144,7 +144,7 @@ import java.util.Vector;
 				}
 				VertexSet vs = new VertexSet();
 				if(_mat_flag){
-					for(int i=0;i<len&&(vs.size()+(len-i))>_Min;i++) {
+					for(int i=line;i<len&&(vs.size()+(len-i))>_Min;i++) {
 						float v = new Double(st.nextToken()).floatValue();
 						if(v>_TH & line< i) {
 							vs.add(i);
@@ -181,6 +181,19 @@ import java.util.Vector;
 		System.out.println("Graph: |V|="+this._V.size()+" ,  |E|="+_E_size);
 		
 	}
+	public int min(){
+		return _Min;
+	}
+	public Double TH(){
+		return _TH;
+	}
+	public int V(){
+		return _V.size();
+	}
+	public int E(){
+		return _E_size;
+	}
+	
 	
 	/*************** Clique Algorithms ******************/
 	/*Vector<VertexSet>  All_Cliques(int Q_size) {
