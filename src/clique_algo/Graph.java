@@ -36,8 +36,10 @@ import java.util.Vector;
 	private void init() throws Exception {
 		FileReader fr=null;
         int source=0;
+        int prev=-1;
         int ind=0;
         int Vertex_num=0;
+        VertexSet vs;
         String[] splited = new String[10];
 		try {
 			fr = new FileReader(this._file_name);
@@ -88,7 +90,7 @@ import java.util.Vector;
 				if(Clique_Tester.Debug){
 					if(line%t==0) System.out.print(".");                                
 				}
-				VertexSet vs = new VertexSet();
+				vs = new VertexSet();
 				if(_mat_flag){
 					for(int i=0;i<len;i++) {
 						float v = new Double(st.nextToken()).floatValue();
@@ -104,22 +106,24 @@ import java.util.Vector;
                             throw new Exception("Wrong file format!!!");
                         }
                         source = Integer.parseInt(splited[0]);
-                        if(splited.length==1) {
-                            ind = source;
-                            vs.add(ind);
-                            _E_size++;
+                        if (prev+1<source){
+                            for(int i=prev+1;i<source;i++){
+                                vs = new VertexSet();
+                                this._V.add(i, vs);
+                            }
                         }
-                        else{
+                        prev=source;
+                        if (Vertex_num<source) Vertex_num=source;
+                        if(splited.length>1) {
+                            vs = new VertexSet();
                             StringTokenizer st2 = new StringTokenizer(splited[1], ", ");
                             while (st2.hasMoreTokens()) {
                                 ind = new Integer(st2.nextToken()).intValue();
+                                if (Vertex_num<ind) Vertex_num=ind;
                                 if (source < ind) vs.add(ind);
                                 _E_size++;
                             }
                         }
-
-
-
                     } else {
                         st.nextToken();
                         while (st.hasMoreTokens()) {
@@ -147,6 +151,12 @@ import java.util.Vector;
                 }
             }
 			}
+            if (_csv_flag && source<Vertex_num){
+                for(int i=source+1;i<Vertex_num+1;i++){
+                    vs = new VertexSet();
+                    this._V.add(i, vs);
+                }
+            }
 			//if(this._mat_flag & Clique_Tester.Convert) {write2file();}
             if(Clique_Tester.Convert) {write2file();}
 			if(Clique_Tester.Debug){

@@ -19,7 +19,8 @@ public class Clique_Tester {
 	
 	public static void main(String[] args) {  // test1.csv_DG.txt  0.8 5 7
 		
-	String[] A={"test2.txt","0.8","5","7"};
+	//String[] A={"test3a.csv","0.8","3","7"};
+		String[] A={"test3.txt","0.8","3","7"};
 			//	if(args==null || args.length<3) {
 			//help();
 		//}
