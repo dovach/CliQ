@@ -20,7 +20,7 @@ public class Clique_Tester {
 	public static void main(String[] args) {  // test1.csv_DG.txt  0.8 5 7
 		
 	//String[] A={"test3a.csv","0.8","3","7"};
-		String[] A={"test3.txt","0.8","3","7"};
+		String[] A={"testBig.csv","0.8","15","30"};
 			//	if(args==null || args.length<3) {
 			//help();
 		//}
@@ -28,7 +28,9 @@ public class Clique_Tester {
 			//parse(args);
 			parse(A);
 			long t0= new Date().getTime();
-			Graph G = new Graph(in_file, TH);
+			//Graph G = new Graph(in_file, TH);
+
+			Graph G = new Graph(in_file);
 			long t1= new Date().getTime();
 			System.out.println("Init Graph: "+(t1-t0)+"  ms");	
 			//Vector<VertexSet> c1 = G.All_Cliques(maxQ);
@@ -41,6 +43,8 @@ public class Clique_Tester {
 			G.All_Cliques_DFS(out_file,minQ,maxQ);
 			long t3= new Date().getTime();
 			System.out.println("Alg3: "+(t3-t2)+"  ms");
+
+            System.out.println("Max Clique:" + G.maxCliqueSize());
 			//write2file(c1);
 			//out_file = in_file+"_out2.txt";
 			//printAll(c2);

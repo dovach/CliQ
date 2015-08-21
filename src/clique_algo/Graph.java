@@ -6,179 +6,227 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 
 /**
- * this class represents an undirected 0/1 sparse Graph 
- * @author Boaz
+ * this class represents an undirected 0/1 sparse Graph
  *
+ * @author Boaz
  */
- class Graph {
-	 private String _file_name;
-	 private Vector <VertexSet> _V;
-	 private double _TH; // the threshold value
-	 private int _E_size = 0;
-	 private boolean _mat_flag=true;
-     private boolean _csv_flag=false;
-	 Graph(String file, double th) {
-		this._file_name = file;
-		_TH = th;
-		_V = new  Vector <VertexSet>();
-         try {
-             init();
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
-     }
-	 
-	private void init() throws Exception {
-		FileReader fr=null;
-        int source=0;
-        int prev=-1;
-        int ind=0;
-        int Vertex_num=0;
+class Graph {
+    private String _file_name;
+    private Vector<VertexSet> _V;
+    private double _TH = 0; // the threshold value
+    private int _E_size = 0;
+    private boolean _mat_flag = true;
+
+    Graph(String file, double th) {
+        this._file_name = file;
+        _TH = th;
+        _V = new Vector<VertexSet>();
+        try {
+            init();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    Graph(String file) {
+        _V = new Vector<VertexSet>();
+        try {
+            readCsv(file);
+            write2Csv(file + "_DG.txt");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readCsv(String file) throws Exception {
+        FileReader fr = null;
+        int source = 0;
+        int prev = -1;
+        int ind = 0;
+        int Vertex_num = 0;
         VertexSet vs;
-        String[] splited = new String[10];
-		try {
-			fr = new FileReader(this._file_name);
-		} catch (FileNotFoundException e) {	e.printStackTrace();}
-		BufferedReader is = new BufferedReader(fr);
-		try {
-			String s = is.readLine();
-			StringTokenizer st = new StringTokenizer(s,", ");
-			int len = st.countTokens();
-			int line = 0;
-			
-			String ll = "0%   20%   40%   60%   80%   100%";
-			int t = Math.max(1,len/ll.length());
-			_mat_flag = true;
-			if (s.startsWith("A")) {
-				if(Clique_Tester.Debug){
-					System.out.println("Assumes compact representation! two line header!!!");
-					System.out.println("Header Line1: "+s);
-					s = is.readLine();
-					System.out.println("Header Line2: "+s);
-					s = is.readLine();
-					st = new StringTokenizer(s,", ");
-					_mat_flag = false;
-				}
-			}
+        StringTokenizer st;
+        try {
+            fr = new FileReader(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        BufferedReader is = new BufferedReader(fr);
+        try {
+            String s = is.readLine();
+            if (s != null) {
+                st = new StringTokenizer(s, ", ");
+            } else {
+                throw new Exception("The file is empty!!!");
+            }
 
-			if (s.startsWith("S")) {
-				if(Clique_Tester.Debug){
-					System.out.println("Assumes CSV nodes list representation!");
-                    splited = s.split(" ");
-                    Vertex_num=Integer.parseInt(splited[1]);
-                    s = is.readLine();
-                    //st = new StringTokenizer(s," ");
-                    splited = s.split(";");
-                    //this._V.setSize(Vertex_num);
-					_mat_flag = false;
-                    _csv_flag=true;
-				}
-			}
+            String ll = "0%   20%   40%   60%   80%   100%";
 
-			if(Clique_Tester.Debug && _mat_flag==true){
-				System.out.println("Reading a corrolation matrix of size: "+len+"*"+len+" this may take a while");
-				System.out.println(ll);
-			}
-	
-			while(s!=null) {
-				
-				if(Clique_Tester.Debug){
-					if(line%t==0) System.out.print(".");                                
-				}
-				vs = new VertexSet();
-				if(_mat_flag){
-					for(int i=0;i<len;i++) {
-						float v = new Double(st.nextToken()).floatValue();
-						if(v>_TH & line< i) {
-							vs.add(i);
-							_E_size++;
-						}
-					}
-				}
-				else {
-                    if (_csv_flag) {
-                       if (splited.length>2) {
-                            throw new Exception("Wrong file format!!!");
-                        }
-                        source = Integer.parseInt(splited[0]);
-                        if (prev+1<source){
-                            for(int i=prev+1;i<source;i++){
-                                vs = new VertexSet();
-                                this._V.add(i, vs);
-                            }
-                        }
-                        prev=source;
-                        if (Vertex_num<source) Vertex_num=source;
-                        if(splited.length>1) {
-                            vs = new VertexSet();
-                            StringTokenizer st2 = new StringTokenizer(splited[1], ", ");
-                            while (st2.hasMoreTokens()) {
-                                ind = new Integer(st2.nextToken()).intValue();
-                                if (Vertex_num<ind) Vertex_num=ind;
-                                if (source < ind) vs.add(ind);
-                                _E_size++;
-                            }
-                        }
-                    } else {
-                        st.nextToken();
-                        while (st.hasMoreTokens()) {
-                            ind = new Integer(st.nextToken()).intValue();
-                            if (line < ind) vs.add(ind);
-                            _E_size++;
-                        }
+            if (Clique_Tester.Debug) {
+                System.out.println("Assumes CSV nodes list representation!");
+            }
+
+            while (s != null) {
+                vs = new VertexSet();
+                source = new Integer(st.nextToken()).intValue();
+
+                if (prev + 1 < source) {
+                    for (int i = prev + 1; i < source; i++) {
+                        vs = new VertexSet();
+                        this._V.add(i, vs);
                     }
                 }
-                if(_csv_flag){
-                    this._V.add(source, vs);
+                prev = source;
+                if (Vertex_num < source) Vertex_num = source;
+
+                vs = new VertexSet();
+
+                while (st.hasMoreTokens()) {
+                    ind = new Integer(st.nextToken()).intValue();
+                    if (Vertex_num < ind) Vertex_num = ind;
+                    if (source < ind) vs.add(ind);
+                    _E_size++;
                 }
-                else{
-                    this._V.add(vs);
+
+                this._V.add(source, vs);
+
+                s = is.readLine();
+                if (s != null) {
+                    st = new StringTokenizer(s, ", ");
                 }
-				line++;
-				s = is.readLine();
-			if(s!=null){
-                if(_csv_flag){
-                    //st = new StringTokenizer(s," ");
-                    splited = s.split("; ");
-                }
-                else{
-                    st = new StringTokenizer(s,", ");
-                }
+
             }
-			}
-            if (_csv_flag && source<Vertex_num){
-                for(int i=source+1;i<Vertex_num+1;i++){
+            if (source < Vertex_num) {
+                for (int i = source + 1; i < Vertex_num + 1; i++) {
                     vs = new VertexSet();
                     this._V.add(i, vs);
                 }
             }
-			//if(this._mat_flag & Clique_Tester.Convert) {write2file();}
-            if(Clique_Tester.Convert) {write2file();}
-			if(Clique_Tester.Debug){
-				System.out.println("");
-				System.out.print("done reading the graph! ");
-				this.print();}
-		} catch (IOException e) {e.printStackTrace();}
-	 }
-	
-	public VertexSet Ni(int i) {
-		VertexSet ans = _V.elementAt(i);
-		return  ans;
-	}
-	public void print() {
-		System.out.println("Graph: |V|="+this._V.size()+" ,  |E|="+_E_size);
-		
-	}
-	
-	/*************** Clique Algorithms ******************/
-	/*Vector<VertexSet>  All_Cliques(int Q_size) {
-		Vector<VertexSet> ans = new Vector<VertexSet>();
-		Vector<VertexSet>C0 = allEdges(); // all edges – all cliques of size 2/
+            if (Clique_Tester.Debug) {
+                System.out.println("");
+                System.out.print("done reading the graph! ");
+                this.print();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void write2Csv(String file) {
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PrintWriter os = new PrintWriter(fw);
+        os.println("ALL_Cliques: of file: " + file);
+        os.println("");
+        for (int i = 0; i < this._V.size(); i++) {
+            VertexSet curr = _V.elementAt(i);
+            if (curr != null) os.println(i + ", " + curr.toFile());
+        }
+        os.close();
+        try {
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void init() {
+        FileReader fr = null;
+        try {
+            fr = new FileReader(this._file_name);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        BufferedReader is = new BufferedReader(fr);
+        try {
+            String s = is.readLine();
+            StringTokenizer st = new StringTokenizer(s, ", ");
+            int len = st.countTokens();
+            int line = 0;
+
+            String ll = "0%   20%   40%   60%   80%   100%";
+            int t = Math.max(1, len / ll.length());
+            if (Clique_Tester.Debug) {
+                System.out.println("Reading a corrolation matrix of size: " + len + "*" + len + " this may take a while");
+                System.out.println(ll);
+            }
+            _mat_flag = true;
+            if (s.startsWith("A")) {
+                if (Clique_Tester.Debug) {
+                    System.out.println("Assumes compact representation! two line haeder!!!");
+                    System.out.println("Header Line1: " + s);
+                    s = is.readLine();
+                    System.out.println("Header Line2: " + s);
+                    s = is.readLine();
+                    st = new StringTokenizer(s, ", ");
+                    _mat_flag = false;
+                }
+            }
+
+            while (s != null) {
+
+                if (Clique_Tester.Debug) {
+                    if (line % t == 0) System.out.print(".");
+                }
+                VertexSet vs = new VertexSet();
+                if (_mat_flag) {
+                    for (int i = 0; i < len; i++) {
+                        float v = new Double(st.nextToken()).floatValue();
+                        if (v > _TH & line < i) {
+                            vs.add(i);
+                            _E_size++;
+                        }
+                    }
+                } else {
+                    st.nextToken();
+                    while (st.hasMoreTokens()) {
+                        int ind = new Integer(st.nextToken()).intValue();
+                        // bug fixed as for Ronens format.
+                        if (line < ind) vs.add(ind);
+                    }
+                }
+                this._V.add(vs);
+                line++;
+                s = is.readLine();
+                if (s != null) st = new StringTokenizer(s, ", ");
+            }
+            if (this._mat_flag & Clique_Tester.Convert) {
+                write2file();
+            }
+            if (Clique_Tester.Debug) {
+                System.out.println("");
+                System.out.print("done reading the graph! ");
+                this.print();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public VertexSet Ni(int i) {
+        VertexSet ans = _V.elementAt(i);
+        return ans;
+    }
+
+    public void print() {
+        System.out.println("Graph: |V|=" + this._V.size() + " ,  |E|=" + _E_size);
+
+    }
+
+    /*************** Clique Algorithms ******************/
+    /*Vector<VertexSet>  All_Cliques(int Q_size) {
+        Vector<VertexSet> ans = new Vector<VertexSet>();
+		Vector<VertexSet>C0 = allEdges(); // all edges ï¿½ all cliques of size 2/
 		ans.addAll(C0);
 		for(int i=3;i<=Q_size;i++) {
 			Vector<VertexSet>C1 = allC(C0);
@@ -189,7 +237,7 @@ import java.util.Vector;
 	}
 	Vector<VertexSet>  All_Cliques(int min_Q_size, int max_Q_size) {
 		Vector<VertexSet> ans = new Vector<VertexSet>();
-		Vector<VertexSet> C0 = allEdges(), C1=null; // all edges – all cliques of size 2/
+		Vector<VertexSet> C0 = allEdges(), C1=null; // all edges ï¿½ all cliques of size 2/
 		for(int i=0;i<C0.size();i++) {
 			VertexSet curr = C0.elementAt(i);
 			C1 = All_Cliques_of_edge(curr, min_Q_size,  max_Q_size);
@@ -198,14 +246,14 @@ import java.util.Vector;
 		}
 		return ans;
 	}*/
-	/**
-	 * this method retuns all the Cliques of size between [min,max] which contains the subVertexSet e (usually an edge);
-	 * @param min_Q_size
-	 * @param max_Q_size
-	 * @return
-	 */
-	/*
-	Vector<VertexSet>  All_Cliques_of_edge(VertexSet e, int min_Q_size, int max_Q_size) {
+    /**
+     * this method retuns all the Cliques of size between [min,max] which contains the subVertexSet e (usually an edge);
+     * @param min_Q_size
+     * @param max_Q_size
+     * @return
+     */
+    /*
+    Vector<VertexSet>  All_Cliques_of_edge(VertexSet e, int min_Q_size, int max_Q_size) {
 		Vector<VertexSet> ans = new Vector<VertexSet>();
 		ans.add(e);
 		int i=0;
@@ -265,162 +313,229 @@ import java.util.Vector;
 		}
 		return ans;
 	}*/
-	/**
-	 * computes all the 2 cliques --> i.e. all the edges 
-	 * @return
-	 */
-	private Vector<VertexSet> allEdges() { // all edges – all cliques of size 2/
-		Vector<VertexSet> ans = new Vector<VertexSet>();
-		for(int i=0;i<_V.size();i++) {
-			VertexSet curr = _V.elementAt(i);
-			for(int a=0;a<curr.size();a++) {
-				if(i<curr.at(a)) {
-					VertexSet tmp = new VertexSet();
-					tmp.add(i) ; 
-					tmp.add(curr.at(a));
-					ans.add(tmp);
-				}
-			}
-			
-		}
-		return ans;
-	}
-	/**
-	 * This method computes all cliques of size [min,max] or less using a memory efficient DFS like algorithm.
-	 * The implementation was written with CUDA in mind - as a based code for a possibly implementation of parallel cernal.
-	 * 
-	 */
-	Vector<VertexSet>  All_Cliques_DFS(int min_size, int max_size) {
-		Clique.init(this);
-		Vector<VertexSet> ans = new Vector<VertexSet>();
-		Vector<VertexSet>C0 = allEdges(); // all edges – all cliques of size 2/
-	//	ans.addAll(C0);
-		int len = C0.size();
-		//System.out.println("|E|= "+len);
-		int count = 0;
-		for(int i=0;i<len;i++) {
-			
-			VertexSet curr_edge = C0.elementAt(i);
-			Clique edge = new Clique(curr_edge.at(0),curr_edge.at(1) );
-			Vector<Clique> C1 = allC_seed(edge, min_size, max_size);
-			count+=C1.size();
-			//System.out.println("alg2 "+i+") edge:["+curr_edge.at(0)+","+curr_edge.at(1)+"]"+C1.size() +"  total: "+count);
-			addToSet(ans, C1);
-		} // for
-		return ans;
-	}
-	/**
-	 * 
-	 * @param min_size
-	 * @param max_size
-	 */
-	 public void All_Cliques_DFS(String out_file, int min_size, int max_size) {
-			Clique.init(this);
-			Vector<VertexSet>C0 = allEdges(); // all edges – all cliques of size 2/
-			int len = C0.size();
-			System.out.println("|E|= "+len);
-			int count = 0;
-			
-			FileWriter fw=null;
-			try {fw = new FileWriter(out_file);} 
-			catch (IOException e) {e.printStackTrace();}
-			PrintWriter os = new PrintWriter(fw);
-			//os.println("A");
-			
-			String ll = "0%   20%   40%   60%   80%   100%";
-			int t = Math.max(1,len/ll.length());
-			if(Clique_Tester.Debug){
-				System.out.println("Computing all cliques of size["+min_size+","+max_size+"] based on "+len+" edges graph, this may take a while");
-				System.out.println(ll);
-			}
-			os.println("All Cliques: file [min max] TH,"+this._file_name+","+min_size+", "+max_size+", "+this._TH);
-			os.println("index, edge, clique size, c0, c1, c2, c3, c4,  c5, c6, c7, c8, c9");
-			for(int i=0;i<len;i++) {
-				
-				VertexSet curr_edge = C0.elementAt(i);
-				Clique edge = new Clique(curr_edge.at(0),curr_edge.at(1) );
-				Vector<Clique> C1 = allC_seed(edge, min_size, max_size);
-			
-				
-				for(int b=0;b<C1.size();b++) {
-					Clique c = C1.elementAt(b);
-					if (c.size()>=min_size) {
-						os.println(count+", "+i+","+c.size()+", "+c.toFile());
-						count++;
-					}
-				}
-				if(count > Clique_Tester.MAX_CLIQUE) {
-					os.println("ERROR: too many cliques! - cutting off at "+Clique_Tester.MAX_CLIQUE+" for larger files change the default Clique_Tester.MAX_CLIQUE param");
-					i=len;
-				}
-				if(i%t==0) {
-					System.out.print(".");
-				}
-			} // for
-			System.out.println();
-			
-			os.close();
-			try {
-				fw.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-	
-	/**
-	 * this function simply add the clique (with no added intersection data) to the set of cliques)
-	 * @param ans
-	 * @param C1
-	 */
-	private void addToSet(Vector<VertexSet> ans, Vector<Clique> C1) {
-		for(int i=0;i<C1.size();i++) {
-			ans.add(C1.elementAt(i).clique());
-		}
-	}
-	Vector<Clique> allC_seed(Clique edge, int min_size, int max_size) {
-		Vector<Clique> ans = new Vector<Clique>();
-		ans.add(edge);
-		int i=0;
-	//	int size = 2;
-		while (ans.size()>i) {
-			Clique curr = ans.elementAt(i);
-			if(curr.size()<max_size) {
-				VertexSet Ni = curr.commonNi();
-				for(int a=0;a<Ni.size();a++) {
-					Clique c = new Clique(curr,Ni.at(a));
-					ans.add(c);
-				}
-			}
-			else {i=ans.size();} // speedup trick 
-			i++;
-		}
-		
-		return ans;
-	}
 
-	public void write2file() {
-		FileWriter fw=null;
-		try {fw = new FileWriter(this._file_name+"_DG.txt");} 
-		catch (IOException e) {e.printStackTrace();}
-		PrintWriter os = new PrintWriter(fw);
-		os.println("ALL_Cliques: of file: "+_file_name+",  TH:"+this._TH);
-		os.println("");
-		for(int i=0;i<this._V.size();i++) {
-			VertexSet curr = _V.elementAt(i);
-            if (_csv_flag){
-                if(curr != null) os.println(i + ", " + curr.toFile());
+    /**
+     * computes all the 2 cliques --> i.e. all the edges
+     *
+     * @return
+     */
+    private Vector<VertexSet> allEdges() { // all edges ï¿½ all cliques of size 2/
+        Vector<VertexSet> ans = new Vector<VertexSet>();
+        for (int i = 0; i < _V.size(); i++) {
+            VertexSet curr = _V.elementAt(i);
+            for (int a = 0; a < curr.size(); a++) {
+                if (i < curr.at(a)) {
+                    VertexSet tmp = new VertexSet();
+                    tmp.add(i);
+                    tmp.add(curr.at(a));
+                    ans.add(tmp);
+                }
             }
-            else {
-                os.println(i + ", " + curr.toFile());
+
+        }
+        return ans;
+    }
+
+    /**
+     * This method computes all cliques of size [min,max] or less using a memory efficient DFS like algorithm.
+     * The implementation was written with CUDA in mind - as a based code for a possibly implementation of parallel cernal.
+     */
+    Vector<VertexSet> All_Cliques_DFS(int min_size, int max_size) {
+        Clique.init(this);
+        Vector<VertexSet> ans = new Vector<VertexSet>();
+        Vector<VertexSet> C0 = allEdges(); // all edges ï¿½ all cliques of size 2/
+        //	ans.addAll(C0);
+        int len = C0.size();
+        //System.out.println("|E|= "+len);
+        int count = 0;
+        for (int i = 0; i < len; i++) {
+
+            VertexSet curr_edge = C0.elementAt(i);
+            Clique edge = new Clique(curr_edge.at(0), curr_edge.at(1));
+            Vector<Clique> C1 = allC_seed(edge, min_size, max_size);
+            count += C1.size();
+            //System.out.println("alg2 "+i+") edge:["+curr_edge.at(0)+","+curr_edge.at(1)+"]"+C1.size() +"  total: "+count);
+            addToSet(ans, C1);
+        } // for
+        return ans;
+    }
+
+    /**
+     * @param min_size
+     * @param max_size
+     */
+    public void All_Cliques_DFS(String out_file, int min_size, int max_size) {
+        Clique.init(this);
+        Vector<VertexSet> C0 = allEdges(); // all edges ï¿½ all cliques of size 2/
+        int len = C0.size();
+        System.out.println("|E|= " + len);
+        int count = 0;
+
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(out_file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PrintWriter os = new PrintWriter(fw);
+        //os.println("A");
+
+        String ll = "0%   20%   40%   60%   80%   100%";
+        int t = Math.max(1, len / ll.length());
+        if (Clique_Tester.Debug) {
+            System.out.println("Computing all cliques of size[" + min_size + "," + max_size + "] based on " + len + " edges graph, this may take a while");
+            System.out.println(ll);
+        }
+        os.println("All Cliques: file [min max] TH," + this._file_name + "," + min_size + ", " + max_size + ", " + this._TH);
+        os.println("index, edge, clique size, c0, c1, c2, c3, c4,  c5, c6, c7, c8, c9");
+        for (int i = 0; i < len; i++) {
+
+            VertexSet curr_edge = C0.elementAt(i);
+            Clique edge = new Clique(curr_edge.at(0), curr_edge.at(1));
+            Vector<Clique> C1 = allC_seed(edge, min_size, max_size);
+
+
+            for (int b = 0; b < C1.size(); b++) {
+                Clique c = C1.elementAt(b);
+                if (c.size() >= min_size) {
+                    os.println(count + ", " + i + "," + c.size() + ", " + c.toFile());
+                    count++;
+                }
             }
-		}
-		os.close();
-		try {
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+            if (count > Clique_Tester.MAX_CLIQUE) {
+                os.println("ERROR: too many cliques! - cutting off at " + Clique_Tester.MAX_CLIQUE + " for larger files change the default Clique_Tester.MAX_CLIQUE param");
+                i = len;
+            }
+            if (i % t == 0) {
+                System.out.print(".");
+            }
+        } // for
+        System.out.println();
+
+        os.close();
+        try {
+            fw.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * this function simply add the clique (with no added intersection data) to the set of cliques)
+     *
+     * @param ans
+     * @param C1
+     */
+    private void addToSet(Vector<VertexSet> ans, Vector<Clique> C1) {
+        for (int i = 0; i < C1.size(); i++) {
+            ans.add(C1.elementAt(i).clique());
+        }
+    }
+
+    Vector<Clique> allC_seed(Clique edge, int min_size, int max_size) {
+        Vector<Clique> ans = new Vector<Clique>();
+        ans.add(edge);
+        int i = 0;
+        int size = 2;
+        while (ans.size() > i) {
+
+            Clique curr = ans.elementAt(i);
+            if (min_size <= curr.size() + curr.commonNi().size()) {
+                if (curr.size() < max_size) {
+                    VertexSet Ni = curr.commonNi();
+                    for (int a = 0; a < Ni.size(); a++) {
+                        Clique c = new Clique(curr, Ni.at(a));
+                        ans.add(c);
+                    }
+                } else {
+                    i = ans.size();
+                } // speedup trick
+            }
+            i++;
+
+        }
+
+        return ans;
+    }
+
+    Vector<Clique> allC_seedold(Clique edge, int min_size, int max_size) {
+        Vector<Clique> ans = new Vector<Clique>();
+        ans.add(edge);
+        int i = 0;
+        //	int size = 2;
+        while (ans.size() > i) {
+            Clique curr = ans.elementAt(i);
+            if (curr.size() < max_size) {
+                VertexSet Ni = curr.commonNi();
+                for (int a = 0; a < Ni.size(); a++) {
+                    Clique c = new Clique(curr, Ni.at(a));
+                    ans.add(c);
+                }
+            } else {
+                i = ans.size();
+            } // speedup trick
+            i++;
+        }
+
+        return ans;
+    }
+
+    public void write2file() {
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(this._file_name + "_DG.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PrintWriter os = new PrintWriter(fw);
+        os.println("ALL_Cliques: of file: " + _file_name + ",  TH:" + this._TH);
+        os.println("");
+        for (int i = 0; i < this._V.size(); i++) {
+            VertexSet curr = _V.elementAt(i);
+            os.println(i + ", " + curr.toFile());
+        }
+        os.close();
+        try {
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int maxCliqueSizeByEdge(Clique edge) {
+        Stack<Clique> ans = new Stack<Clique>();
+        ans.push(edge);
+        int maxSize = 2;
+        while (!ans.isEmpty()) {
+            Clique curr = ans.pop();
+            if (maxSize < curr.size()) {
+                maxSize = curr.size();
+            }
+            if (maxSize < curr.size() + curr.commonNi().size()) {
+                VertexSet Ni = curr.commonNi();
+                for (int a = 0; a < Ni.size(); a++) {
+                    Clique c = new Clique(curr, Ni.at(a));
+                    ans.push(c);
+                }
+
+            }
+        }
+        return maxSize;
+    }
+
+    public int maxCliqueSize(){
+        int ans = 2;
+        int tmpSize=2;
+        Clique.init(this);
+        Vector<VertexSet> C0 = allEdges(); // all edges ï¿½ all cliques of size 2/
+        int len = C0.size();
+        for(VertexSet v : C0){
+            Clique edge = new Clique(v.at(0), v.at(1));
+            tmpSize = maxCliqueSizeByEdge(edge);
+            if (ans<tmpSize) ans=tmpSize;
+        }
+        return ans;
+    }
 }
