@@ -26,8 +26,18 @@ public class Clique_Tester {
 		//else {
 			parse(A);
 		
+	//String[] A={"test3a.csv","0.8","3","7"};
+		String[] A={"testBig.csv","0.8","15","30"};
+			//	if(args==null || args.length<3) {
+			//help();
+		//}
+		//else {
+			//parse(args);
+			parse(A);
 			long t0= new Date().getTime();
-			Graph G = new Graph(in_file, TH);
+			//Graph G = new Graph(in_file, TH);
+
+			Graph G = new Graph(in_file);
 			long t1= new Date().getTime();
 			System.out.println("Init Graph: "+(t1-t0)+"  ms");	
 			//Vector<VertexSet> c1 = G.All_Cliques(maxQ);
