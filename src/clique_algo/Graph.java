@@ -218,6 +218,14 @@ class Graph {
         return ans;
     }
 
+    public int V() {
+        return _V.size();
+    }
+
+    public int E() {
+        return _E_size;
+    }
+
     public void print() {
         System.out.println("Graph: |V|=" + this._V.size() + " ,  |E|=" + _E_size);
 
@@ -442,21 +450,20 @@ class Graph {
         while (ans.size() > i) {
 
             Clique curr = ans.elementAt(i);
-            if (min_size <= curr.size() + curr.commonNi().size()) {
-                if (curr.size() < max_size) {
-                    VertexSet Ni = curr.commonNi();
+
+            if (curr.size() < max_size) {
+                VertexSet Ni = curr.commonNi();
+                if (Ni.size() + curr.size() >= min_size) {
                     for (int a = 0; a < Ni.size(); a++) {
                         Clique c = new Clique(curr, Ni.at(a));
                         ans.add(c);
                     }
-                } else {
-                    i = ans.size();
-                } // speedup trick
-            }
+                }
+            } else {
+                i = ans.size();
+            } // speedup trick
             i++;
-
         }
-
         return ans;
     }
 
@@ -525,16 +532,16 @@ class Graph {
         return maxSize;
     }
 
-    public int maxCliqueSize(){
+    public int maxCliqueSize() {
         int ans = 2;
-        int tmpSize=2;
+        int tmpSize = 2;
         Clique.init(this);
         Vector<VertexSet> C0 = allEdges(); // all edges � all cliques of size 2/
         int len = C0.size();
-        for(VertexSet v : C0){
+        for (VertexSet v : C0) {
             Clique edge = new Clique(v.at(0), v.at(1));
             tmpSize = maxCliqueSizeByEdge(edge);
-            if (ans<tmpSize) ans=tmpSize;
+            if (ans < tmpSize) ans = tmpSize;
         }
         return ans;
     }
