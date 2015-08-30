@@ -19,16 +19,6 @@ public class Clique_Tester {
 	
 	public static void main(String[] args) {  // test1.csv_DG.txt  0.8 5 7
 		
-<<<<<<< HEAD
-=======
-	String[] A={"test1.csv","0.8","5","7"};
-			//	if(args==null || args.length<3) {
-			help();
-		//}
-		//else {
-			parse(A);
-		
->>>>>>> master
 	//String[] A={"test3a.csv","0.8","3","7"};
 		String[] A={"testBig.csv","0.8","15","30"};
 			//	if(args==null || args.length<3) {
