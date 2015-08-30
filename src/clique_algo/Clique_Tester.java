@@ -19,6 +19,8 @@ public class Clique_Tester {
 	
 	public static void main(String[] args) {  // test1.csv_DG.txt  0.8 5 7
 		
+<<<<<<< HEAD
+=======
 	String[] A={"test1.csv","0.8","5","7"};
 			//	if(args==null || args.length<3) {
 			help();
@@ -26,6 +28,7 @@ public class Clique_Tester {
 		//else {
 			parse(A);
 		
+>>>>>>> master
 	//String[] A={"test3a.csv","0.8","3","7"};
 		String[] A={"testBig.csv","0.8","15","30"};
 			//	if(args==null || args.length<3) {
@@ -50,6 +53,8 @@ public class Clique_Tester {
 			G.All_Cliques_DFS(out_file,minQ,maxQ);
 			long t3= new Date().getTime();
 			System.out.println("Alg3: "+(t3-t2)+"  ms");
+
+            System.out.println("Max Clique:" + G.maxCliqueSize());
 			//write2file(c1);
 			//out_file = in_file+"_out2.txt";
 			//printAll(c2);
