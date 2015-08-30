@@ -16,8 +16,7 @@ import java.util.Vector;
  *
  * @author Boaz
  */
-<<<<<<< HEAD
-=======
+
  class Graph {
 	 private String _file_name;
 	 private Vector <VertexSet> _V;
@@ -132,7 +131,7 @@ import java.util.Vector;
 	/*Vector<VertexSet>  All_Cliques(int Q_size) {
 		Vector<VertexSet> ans = new Vector<VertexSet>();
 		Vector<VertexSet>C0 = allEdges(); // all edges – all cliques of size 2/
->>>>>>> master
+
 class Graph {
     private String _file_name;
     private Vector<VertexSet> _V;
@@ -335,7 +334,6 @@ class Graph {
         return ans;
     }
 
-<<<<<<< HEAD
     public int V() {
         return _V.size();
     }
@@ -344,8 +342,6 @@ class Graph {
         return _E_size;
     }
 
-=======
->>>>>>> master
     public void print() {
         System.out.println("Graph: |V|=" + this._V.size() + " ,  |E|=" + _E_size);
 
@@ -365,11 +361,8 @@ class Graph {
 	}
 	Vector<VertexSet>  All_Cliques(int min_Q_size, int max_Q_size) {
 		Vector<VertexSet> ans = new Vector<VertexSet>();
-<<<<<<< HEAD
-		Vector<VertexSet> C0 = allEdges(), C1=null; // all edges � all cliques of size 2/
-=======
 		Vector<VertexSet> C0 = allEdges(), C1=null; // all edges – all cliques of size 2/
->>>>>>> master
+
 		for(int i=0;i<C0.size();i++) {
 			VertexSet curr = C0.elementAt(i);
 			C1 = All_Cliques_of_edge(curr, min_Q_size,  max_Q_size);
@@ -445,8 +438,7 @@ class Graph {
 		}
 		return ans;
 	}*/
-<<<<<<< HEAD
-=======
+
 	
 	/**
 	 * computes all the 2 cliques --> i.e. all the edges 
@@ -563,28 +555,7 @@ class Graph {
 			ans.add(C1.elementAt(i).clique());
 		}
 	}
-	Vector<Clique> allC_seed(Clique edge, int min_size, int max_size) {
-		Vector<Clique> ans = new Vector<Clique>();
-		ans.add(edge);
-		int i=0;
-	//	int size = 2;
-		while (ans.size()>i) {
-			Clique curr = ans.elementAt(i);
-			if (min_size < curr.size() + curr.commonNi().size()) {//speedup ArielDavidDovOmer
-			if(curr.size()<max_size) {
-				VertexSet Ni = curr.commonNi();
-				for(int a=0;a<Ni.size();a++) {
-					Clique c = new Clique(curr,Ni.at(a));
-					ans.add(c);
-				}
-			}
-			else {i=ans.size();} // speedup trick 
-			i++;
-		}//end speedup ArielDavidDovOmer
-	}
-		return ans;
-	}
->>>>>>> master
+	
 
     /**
      * computes all the 2 cliques --> i.e. all the edges
@@ -711,40 +682,21 @@ class Graph {
         ans.add(edge);
         int i = 0;
         int size = 2;
-        while (ans.size() > i) {
+        while (ans.size ()>i) { 
+			Clique curr = ans.elementAt (i);
+			if (curr.size() <max_size) { 
+				VertexSet Ni = curr.commonNi ();
+                                if (Ni.size() +curr.size()>=min_size) {
+				for (int a=0; a<Ni.size(); a++)
+				{	Clique c = new Clique(curr, Ni.at (a));
+					ans.add(c);
+				{
+{
+			{
+			else {i=ans.size() ;} // speedup trick 
+			i++;
+		}
 
-            Clique curr = ans.elementAt(i);
-<<<<<<< HEAD
-
-            if (curr.size() < max_size) {
-                VertexSet Ni = curr.commonNi();
-                if (Ni.size() + curr.size() >= min_size) {
-=======
-            if (min_size <= curr.size() + curr.commonNi().size()) {
-                if (curr.size() < max_size) {
-                    VertexSet Ni = curr.commonNi();
->>>>>>> master
-                    for (int a = 0; a < Ni.size(); a++) {
-                        Clique c = new Clique(curr, Ni.at(a));
-                        ans.add(c);
-                    }
-<<<<<<< HEAD
-                }
-            } else {
-                i = ans.size();
-            } // speedup trick
-            i++;
-        }
-=======
-                } else {
-                    i = ans.size();
-                } // speedup trick
-            }
-            i++;
-
-        }
-
->>>>>>> master
         return ans;
     }
 
@@ -813,22 +765,6 @@ class Graph {
         return maxSize;
     }
 
-<<<<<<< HEAD
-    public int maxCliqueSize() {
-        int ans = 2;
-        int tmpSize = 2;
-        Clique.init(this);
-        Vector<VertexSet> C0 = allEdges(); // all edges � all cliques of size 2/
-        int len = C0.size();
-        for (VertexSet v : C0) {
-            Clique edge = new Clique(v.at(0), v.at(1));
-            tmpSize = maxCliqueSizeByEdge(edge);
-            if (ans < tmpSize) ans = tmpSize;
-        }
-        return ans;
-    }
-}
-=======
     public int maxCliqueSize(){
         int ans = 2;
         int tmpSize=2;
@@ -843,4 +779,3 @@ class Graph {
         return ans;
     }
 }
->>>>>>> master
